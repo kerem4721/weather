@@ -1,0 +1,945 @@
+ 
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <script>
+if (!sessionStorage.getItem('onceYenilendi')) {
+  sessionStorage.setItem('onceYenilendi', '1');
+  location.reload();
+}
+</script>
+
+  <meta charset="UTF-8" />
+  <title>Güneydoğu Anadolu Hava Durumu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #121212;
+      --card: #1e1e1e;
+      --text: #f0f0f0;
+      --sec: #888;
+      --accent: #0095ff; /* Daha canlı bir mavi */
+      --accent-hover: #0077cc;
+      --border-color: #333;
+      --shadow-color: rgba(0, 0, 0, 0.2);
+      --success-bg: #28a745;
+      --warning-bg: #ffc107;
+      --danger-bg: #dc3545;
+      --danger-text: #f0f0f0;
+      --font-family: 'Inter', sans-serif;
+      --border-radius: 8px;
+      --container-padding: 15px;
+      --header-height: 60px;
+    }
+
+    [data-theme="light"] {
+      --bg: #f4f6f8; /* Daha yumuşak bir arka plan */
+      --card: #ffffff;
+      --text: #212529; /* Daha yumuşak bir siyah */
+      --sec: #555;
+      --accent: #007bff;
+      --accent-hover: #0056b3;
+      --border-color: #dee2e6;
+      --shadow-color: rgba(0, 0, 0, 0.1);
+      --danger-text: #212529;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-family);
+      transition: background .3s, color .3s;
+      line-height: 1.6;
+    }
+
+    .page-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--container-padding);
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      margin-bottom: 1.5rem;
+      min-height: var(--header-height);
+      flex-wrap: wrap;
+    }
+    
+    .back-button {
+      background-color: var(--card);
+      color: var(--text);
+      padding: 0.6rem 1rem;
+      font-size: 0.9rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color 0.3s, box-shadow 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      box-shadow: 0 2px 4px var(--shadow-color);
+    }
+    .back-button:hover {
+      background-color: var(--accent-hover);
+      color: #fff;
+      box-shadow: 0 4px 8px var(--shadow-color);
+    }
+    .back-button-icon {
+      margin-right: 0.5em;
+    }
+
+
+    h1.page-title {
+      font-size: 1.8rem;
+      color: var(--accent);
+      text-align: center;
+      margin: 0.5rem 1rem; /* Allow wrapping */
+      flex-grow: 1;
+      font-weight: 600;
+    }
+     @media (max-width: 600px) {
+        h1.page-title {
+            font-size: 1.5rem;
+            order: -1; /* Move title above buttons on small screens if they wrap */
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .page-header {
+            justify-content: center; /* Center items when they stack */
+        }
+        .back-button, .theme-toggle-button {
+            margin: 5px;
+        }
+    }
+
+
+    .theme-toggle-button {
+      padding: 0.6rem 1rem;
+      background: var(--card);
+      border: 1px solid var(--border-color);
+      color: var(--text);
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background .3s, color .3s, box-shadow 0.2s;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 4px var(--shadow-color);
+    }
+    .theme-toggle-button:hover {
+      background: var(--accent);
+      color: #fff;
+       box-shadow: 0 4px 8px var(--shadow-color);
+    }
+
+    .il-container {
+        margin-bottom: 2rem;
+    }
+    .il {
+      margin: 10px 0;
+      padding: 15px 20px;
+      background: var(--card);
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 1.1rem;
+      font-weight: 500;
+      transition: background .2s, box-shadow .2s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 5px var(--shadow-color);
+    }
+    .il:hover {
+      background: color-mix(in srgb, var(--card) 80%, var(--accent) 20%);
+      box-shadow: 0 4px 10px var(--shadow-color);
+    }
+    .il .il-name {
+        flex-grow: 1;
+    }
+    .il .il-toggle-icon {
+        transition: transform 0.3s ease;
+        font-size: 1.2rem;
+    }
+    .il[aria-expanded="true"] .il-toggle-icon {
+        transform: rotate(90deg);
+    }
+
+    .ilceler {
+      display: none;
+      margin-top: 0;
+      padding-left: 25px;
+      border-left: 2px solid var(--accent);
+      background: color-mix(in srgb, var(--card) 90%, var(--bg) 10%);
+      border-bottom-left-radius: var(--border-radius);
+      border-bottom-right-radius: var(--border-radius);
+      padding-bottom: 10px;
+      padding-top: 5px;
+    }
+    .ilce {
+      padding: 12px 15px;
+      margin: 8px 0;
+      background: color-mix(in srgb, var(--card) 70%, var(--accent) 5%);
+      border-radius: 6px;
+      color: var(--text); /* Use main text color for better contrast */
+      cursor: pointer;
+      transition: background .2s, transform 0.2s;
+      font-size: 1rem;
+    }
+    .ilce:hover {
+      background: var(--accent);
+      color: #fff;
+      transform: translateX(5px);
+    }
+
+    #loader { display: none; text-align: center; margin: 3rem 0; }
+    .spinner {
+      border: 5px solid var(--sec);
+      border-top: 5px solid var(--accent);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #daily-forecast {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+      justify-content: center;
+    }
+    .day-card {
+      background: var(--card);
+      border-radius: var(--border-radius);
+      padding: 1.25rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 3px 6px var(--shadow-color);
+    }
+    .day-card:hover {
+      transform: translateY(-5px) scale(1.03);
+      box-shadow: 0 6px 12px var(--shadow-color);
+    }
+    .day-card h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--accent);
+    }
+    .day-card .emoji { font-size: 2.8rem; margin: 0.75rem 0; }
+    .day-card .small-text { font-size: .9rem; color: var(--sec); margin-top: 0.3rem; }
+
+
+    #hourly-section { display: none; margin-top: 2.5rem; }
+    #hourly-section h2 {
+        color: var(--accent);
+        margin-bottom: 1.5rem;
+        font-size: 1.6rem;
+        font-weight: 600;
+        text-align: left;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 0.5rem;
+    }
+    #hourly-forecast {
+        display: flex;
+        gap: 1rem;
+        overflow-x: auto;
+        padding: 0.75rem 0.25rem 1.5rem 0.25rem; /* Added more padding bottom */
+        scrollbar-width: thin;
+        scrollbar-color: var(--accent) var(--card);
+    }
+    #hourly-forecast::-webkit-scrollbar { height: 10px; }
+    #hourly-forecast::-webkit-scrollbar-track { background: color-mix(in srgb, var(--card) 50%, var(--bg) 50%); border-radius: 5px; }
+    #hourly-forecast::-webkit-scrollbar-thumb { background-color: var(--accent); border-radius: 5px; border: 2px solid var(--card); }
+
+    .hourly-card {
+      background: var(--card);
+      border-radius: var(--border-radius);
+      border: 1px solid var(--border-color);
+      padding: 1rem 0.75rem;
+      width: 110px; /* Slightly wider */
+      min-height: 180px; 
+      text-align: center;
+      box-shadow: 0 2px 5px var(--shadow-color);
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around; /* Better vertical spacing */
+      cursor: default;
+    }
+    .hourly-card:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 5px 10px color-mix(in srgb, var(--accent) 15%, var(--shadow-color));
+    }
+    .hourly-card h4 { 
+        font-size: 0.9rem; 
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 0.5rem;
+    }
+    .hourly-card .emoji { 
+        font-size: 2.5rem; /* Slightly larger */
+        margin: 0.5rem 0;
+    }
+    .hourly-card .data-section {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; 
+        width: 100%;
+        padding: 0 5px; 
+        margin-top: 0.5rem;
+    }
+    .hourly-data-item {
+        display: flex;
+        align-items: center;
+        font-size: 0.85rem; 
+        color: var(--sec);
+        margin-top: 6px; 
+        text-align: left;
+    }
+    .hourly-data-item:first-child { margin-top: 0; }
+    .hourly-data-item .icon {
+        font-size: 1em; 
+        color: var(--accent);
+        margin-right: 8px; 
+        min-width: 1.4em; 
+        display: inline-block;
+        text-align: center;
+    }
+
+    /* Alert Modal Styles */
+    #alertOverlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease, visibility 0s 0.3s linear;
+      z-index: 1000;
+    }
+    #alertOverlay.visible {
+      visibility: visible;
+      opacity: 1;
+      transition-delay: 0s;
+    }
+
+    #alertBox {
+      background: var(--card); /* Use card bg for consistency */
+      color: var(--text);
+      padding: 25px 30px; /* Adjusted padding */
+      max-width: 480px; /* Slightly wider */
+      width: 90%;
+      border-radius: var(--border-radius);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+      text-align: left; /* Better for readability */
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+    }
+    [data-theme="light"] #alertBox {
+        background: #fff; /* Ensure light theme modal is white */
+        color: #333;
+    }
+    #alertOverlay.visible #alertBox { transform: scale(1); }
+
+    #closeAlertBtn {
+      position: absolute;
+      top: 15px; right: 15px;
+      font-size: 1.8rem; /* Larger, easier to tap */
+      font-weight: bold;
+      color: var(--sec);
+      background: transparent;
+      border: none;
+      padding: 0;
+      line-height: 1;
+      cursor: pointer;
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+    #closeAlertBtn:hover { color: var(--accent); transform: scale(1.1); }
+    [data-theme="light"] #closeAlertBtn { color: #888; }
+    [data-theme="light"] #closeAlertBtn:hover { color: var(--accent); }
+
+
+    #alertBox h2 {
+      margin: 0 0 15px;
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--accent);
+      font-family: var(--font-family);
+    }
+     [data-theme="light"] #alertBox h2 { color: var(--accent); }
+    #alertBox p {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text);
+      font-family: var(--font-family);
+    }
+    [data-theme="light"] #alertBox p { color: #444; }
+
+    .info-warning {
+      background-color: color-mix(in srgb, var(--warning-bg) 20%, var(--card) 80%);
+      color: var(--text);
+      padding: 15px 20px;
+      margin: 2rem 0;
+      border: 1px solid color-mix(in srgb, var(--warning-bg) 50%, var(--border-color) 50%);
+      border-left: 5px solid var(--warning-bg);
+      border-radius: var(--border-radius);
+      font-size: 0.95rem;
+      font-family: var(--font-family);
+    }
+    [data-theme="light"] .info-warning {
+        background-color: #fff3cd;
+        color: #856404;
+        border-color: #ffeeba;
+        border-left-color: #ffc107;
+    }
+    .info-warning strong { color: var(--warning-bg); }
+    [data-theme="light"] .info-warning strong { color: #856404; }
+
+
+    .error-message {
+        color: var(--danger-text);
+        background-color: color-mix(in srgb, var(--danger-bg) 25%, var(--card) 75%);
+        border: 1px solid color-mix(in srgb, var(--danger-bg) 50%, var(--border-color) 50%);
+        border-left: 5px solid var(--danger-bg);
+        padding: 1rem;
+        margin: 1rem auto;
+        border-radius: var(--border-radius);
+        text-align: center;
+        width: 100%;
+        max-width: 600px; /* Limit width for better readability */
+    }
+    [data-theme="light"] .error-message {
+        background-color: #f8d7da;
+        color: #721c24;
+        border-color: #f5c6cb;
+        border-left-color: #dc3545;
+    }
+    
+    /* Hide main city selection, controls, and main page warning if a district is loaded */
+    .district-loaded #iller,
+    .district-loaded .controls-container,
+    .district-loaded #alertBtnContainer, /* This rule will be unused if #alertBtnContainer is removed */
+    .district-loaded .info-warning-mainpage {
+        display: none !important;
+    }
+    
+    main {
+        padding-top: 10px; /* Add some space below header */
+    }
+    
+    @media (max-width: 768px) {
+      h1.page-title { font-size: 1.5rem; }
+      #daily-forecast { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 1rem; }
+      .day-card { padding: 1rem 0.8rem; }
+      .day-card .emoji { font-size: 2.2rem; }
+      #hourly-section h2 { font-size: 1.4rem; }
+      .hourly-card { width: 100px; min-height: 170px; padding: 0.8rem 0.5rem; }
+      .hourly-card .emoji { font-size: 2rem; }
+      #alertBox { padding: 20px 25px; }
+      #alertBox h2 { font-size: 1.4rem; }
+      #alertBox p { font-size: 0.95rem; }
+    }
+
+    @media (max-width: 480px) {
+      .page-container { padding: 10px; }
+      .page-header { flex-direction: column; align-items: stretch; }
+      h1.page-title { text-align: center; margin-bottom: 10px; width: 100%; order: -1;}
+      .back-button, .theme-toggle-button { width: 100%; margin: 5px 0; text-align: center; justify-content: center;}
+      
+      #daily-forecast { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.8rem; }
+      .day-card h3 { font-size: 0.9rem;}
+      .day-card .small-text { font-size: .8rem; }
+
+      #hourly-forecast { gap: 0.5rem; }
+      .hourly-card { width: 90px; min-height: 160px; }
+      .hourly-card h4 { font-size: 0.8rem; }
+      .hourly-data-item { font-size: 0.75rem; }
+    }
+
+  </style>
+</head>
+<body data-theme="dark">
+
+<div class="page-container">
+  <header class="page-header">
+    <a href="index.html" class="back-button" aria-label="Ana sayfaya dön">
+      <span class="back-button-icon">⬅</span> Geri
+    </a>
+    <h1 class="page-title">Güneydoğu Anadolu Hava Durumu</h1>
+    <div class="controls-container"> <!-- Wrapper for theme button -->
+        <button id="btn-theme" class="theme-toggle-button" aria-live="polite">Tema: Karanlık</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Removed alertBtnContainer -->
+
+    <div id="iller" class="il-container" role="navigation" aria-label="İl ve ilçe seçimi"></div>
+
+    <div id="loader" role="status" aria-live="polite"><div class="spinner"></div></div>
+    <div id="daily-forecast" aria-live="polite"></div>
+    <section id="hourly-section" aria-live="polite">
+        <h2 id="hourly-title"></h2>
+        <div id="hourly-forecast"></div>
+    </section>
+
+    <div class="info-warning info-warning-mainpage"> <!-- Added specific class -->
+      ⚠️ <strong>Uyarı:</strong> İlk 3 güne ait hava durumu tahminleri daha güvenilirdir. 3 günden sonrası için gösterilen tahminler değişebilir.
+    </div>
+  </main>
+</div>
+
+
+<div id="alertOverlay" role="dialog" aria-modal="true" aria-labelledby="alertBoxTitle" aria-describedby="alertBoxDescription">
+  <div id="alertBox">
+    <button id="closeAlertBtn" aria-label="Uyarıyı kapat">×</button>
+    <h2 id="alertBoxTitle">HAVA DURUMU UYARISI</h2>
+    <p id="alertBoxDescription">
+      📢 UYARI<br>
+Bölge: Güneydoğu Anadolu
+Geçerlilik Süresi: 30 Mayıs – 5 Haziran 2025
+<br><br>
+Meteoroloji verilerine göre önümüzdeki günlerde Güneydoğu Anadolu Bölgesi'nde
+<br><br>
+Ara sıra Kırkikindi tipi sağanak yağışlar,
+<br><br>
+Ani ve kuvvetli rüzgârlar,
+<br><br>
+Yerel düzeyde sel ve su baskını riski,
+<br><br>
+Kuru anız alanlarında yangın oluşma ihtimali beklenmektedir.   
+      <br><br>
+      Bölge halkına ve ilgililere önemle duyurulur.
+    </p>
+  </div>
+</div>
+<footer style="text-align:center; font-size:14px; color:#777; padding:10px;">
+  © 2025 AtmosferGDA – Tüm hakları saklıdır.
+  <br><small> verileriler <a href="https://open-meteo.com/" style="color:inherit; text-decoration:underline;">Open-Meteo.com</a> üzerinden alınan verilere dayanmaktadır.</small>
+</footer>
+
+
+<script>
+  const overlay = document.getElementById('alertOverlay');
+  const closeBtn = document.getElementById('closeAlertBtn');
+  
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+        if (overlay) overlay.classList.remove('visible');
+    });
+  }
+  if (overlay) {
+    overlay.addEventListener('click', e => {
+        if (e.target === overlay) {
+            overlay.classList.remove('visible');
+        }
+    });
+    overlay.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            overlay.classList.remove('visible');
+        }
+    });
+  }
+
+    const regions = {
+      "Adıyaman": ["Adıyaman Merkez","Besni","Çelikhan","Gerger","Gölbaşı","Kâhta","Samsat","Sincik","Tut"],
+      "Batman": ["Batman Merkez","Beşiri","Gercüş","Hasankeyf","Kozluk","Sason"],
+      "Diyarbakır": ["Bağlar","Bismil","Çermik","Çınar","Çüngüş","Dicle","Eğil","Ergani","Hani","Hazro","Kayapınar","Kocaköy","Kulp","Lice","Silvan","Sur","Yenişehir"],
+      "Gaziantep": ["Araban","İslahiye","Karkamış","Nizip","Nurdağı","Oğuzeli","Şahinbey","Şehitkamil","Yavuzeli"],
+      "Kilis": ["Kilis Merkez","Elbeyli","Musabeyli","Polateli"],
+      "Mardin": ["Artuklu","Dargeçit","Derik","Kızıltepe","Mazıdağı","Midyat","Nusaybin","Ömerli","Savur","Yeşilli"],
+      "Siirt": ["Siirt Merkez","Baykan","Eruh","Kurtalan","Pervari","Şirvan","Tillo"],
+      "Şanlıurfa": ["Akçakale","Birecik","Bozova","Ceylanpınar","Eyyübiye","Halfeti","Haliliye","Harran","Hilvan","Karaköprü","Siverek","Suruç","Viranşehir"],
+      "Şırnak": ["Şırnak Merkez","Beytüşşebap","Cizre","Güçlükonak","İdil","Silopi","Uludere","istanbul"]
+    };
+    const coords = {
+      "Adıyaman Merkez":{lat:37.7648,lon:38.2768},"Besni":{lat:37.7796,lon:37.7088},"Çelikhan":{lat:37.4665,lon:38.0294},"Gerger":{lat:38.0106,lon:38.2433},
+      "Gölbaşı":{lat:37.8336,lon:38.0832},"Kâhta":{lat:37.8097,lon:38.6020},"Samsat":{lat:37.7531,lon:37.6728},"Sincik":{lat:37.6228,lon:38.1603},
+      "Tut":{lat:37.6026,lon:37.9895},"Batman Merkez":{lat:37.8870,lon:41.1320},"Beşiri":{lat:37.4497,lon:41.0412},"Gercüş":{lat:37.8000,lon:41.5423},
+      "Hasankeyf":{lat:37.8635,lon:41.3887},"Kozluk":{lat:37.9434,lon:41.2799}, "Sason":{lat:38.0418,lon:41.4650},"Bağlar":{lat:37.8853,lon:40.1771},
+      "Bismil":{lat:37.7769,lon:40.6711},"Çermik":{lat:37.5786,lon:40.4184}, "Çınar":{lat:37.9590,lon:40.3898},"Çüngüş":{lat:37.5833,lon:40.4789},
+      "Dicle":{lat:37.8768,lon:40.1581},"Eğil":{lat:37.6541,lon:40.0111},"Ergani":{lat:38.0714,lon:40.6815},"Hani":{lat:37.5500,lon:39.9500},
+      "Hazro":{lat:38.0715,lon:40.4411},"Kayapınar":{lat:37.9144,lon:40.1933},"Kocaköy":{lat:37.8633,lon:40.3622},"Kulp":{lat:38.0000,lon:40.6783},
+      "Lice":{lat:38.1622,lon:40.6667},"Silvan":{lat:37.7270,lon:40.7097},"Sur":{lat:37.9131,lon:40.2175},"Yenişehir":{lat:37.9467,lon:40.2381},
+      "Araban":{lat:37.0480,lon:37.9569},"İslahiye":{lat:36.7619,lon:37.0695}, "Karkamış":{lat:36.9667,lon:37.9333},"Nizip":{lat:37.0090,lon:37.8175},
+      "Nurdağı":{lat:37.0717,lon:37.2392},"Oğuzeli":{lat:36.8578,lon:37.1174}, "Şahinbey":{lat:37.0622,lon:37.3574},"Şehitkamil":{lat:37.1154,lon:37.4028},
+      "Yavuzeli":{lat:37.0289,lon:37.3311},"Kilis Merkez":{lat:36.7164,lon:37.1217},"Elbeyli":{lat:36.7383,lon:36.9900},"Musabeyli":{lat:36.8964,lon:36.7964},
+      "Polateli":{lat:36.6197,lon:36.8831},"Artuklu":{lat:37.3089,lon:40.7421},"Dargeçit":{lat:37.1461,lon:41.2770},"Derik":{lat:37.2047,lon:40.8266},
+      "Kızıltepe":{lat:37.1489,lon:40.5469},"Mazıdağı":{lat:37.1031,lon:40.7017},"Midyat":{lat:37.3129,lon:41.4469},"Nusaybin":{lat:37.0731,lon:41.2086},
+      "Ömerli":{lat:37.5386,lon:40.8375},"Savur":{lat:37.2594,lon:40.7514},"Yeşilli":{lat:37.3444,lon:40.6897},"Siirt Merkez":{lat:37.9350,lon:41.9389},
+      "Baykan":{lat:37.6925,lon:41.3914},"Eruh":{lat:38.1094,lon:42.1014},"Kurtalan":{lat:37.8050,lon:41.9675},"Pervari":{lat:37.6100,lon:42.4625},
+      "Şirvan":{lat:38.2022,lon:41.9075},"Tillo":{lat:37.9589,lon:41.7372},"Akçakale":{lat:36.7631,lon:38.3069},"Birecik":{lat:37.9797,lon:38.2733},
+      "Bozova":{lat:37.5539,lon:38.6419},"Ceylanpınar":{lat:36.8089,lon:39.1514},"Eyyübiye":{lat:37.1670,lon:38.7944},"Halfeti":{lat:37.4622,lon:38.0267},
+      "Haliliye":{lat:37.1936,lon:38.7923},"Harran":{lat:36.9297,lon:38.1328},"Hilvan":{lat:37.5378,lon:38.1253},"Karaköprü":{lat:37.2183,lon:38.9189},
+      "Siverek":{lat:37.7486,lon:38.6653},"Suruç":{lat:36.9450,lon:38.7878},"Viranşehir":{lat:37.2361,lon:39.4042},"Şırnak Merkez":{lat:37.5172,lon:42.4617},
+      "Beytüşşebap":{lat:37.2792,lon:42.4333},"Cizre":{lat:37.3328,lon:42.1514},"Güçlükonak":{lat:37.4069,lon:42.6483},"İdil":{lat:37.4494,lon:41.9200},
+      "Silopi":{lat:37.3972,lon:42.4600}, "Uludere":{lat:37.2797,lon:42.6556},"istanbul": { "lat": 41.0082, "lon": 28.9784 }
+    };
+
+    const illerEl = document.getElementById('iller');
+    if (illerEl) {
+        Object.entries(regions).forEach(([il, ilceler]) => {
+          const ilDiv = document.createElement('div');
+          ilDiv.className = 'il';
+          ilDiv.setAttribute('role', 'button');
+          ilDiv.setAttribute('aria-expanded', 'false');
+          ilDiv.setAttribute('tabindex', '0'); 
+          
+          const ilNameSpan = document.createElement('span');
+          ilNameSpan.className = 'il-name';
+          ilNameSpan.textContent = il;
+          ilDiv.appendChild(ilNameSpan);
+
+          const toggleIcon = document.createElement('span');
+          toggleIcon.className = 'il-toggle-icon';
+          toggleIcon.innerHTML = '&#x276F;'; 
+          ilDiv.appendChild(toggleIcon);
+          
+          const ilceList = document.createElement('div');
+          ilceList.className = 'ilceler';
+          ilceList.id = `ilceler-${il.replace(/\s+/g, '-')}`; 
+          ilDiv.setAttribute('aria-controls', ilceList.id);
+
+          const toggleIlceler = () => {
+            const isExpanded = ilDiv.getAttribute('aria-expanded') === 'true';
+            document.querySelectorAll('.il[aria-expanded="true"]').forEach(expandedIl => {
+                if (expandedIl !== ilDiv) {
+                    expandedIl.setAttribute('aria-expanded', 'false');
+                    const otherIlceList = document.getElementById(expandedIl.getAttribute('aria-controls'));
+                    if (otherIlceList) otherIlceList.style.display = 'none';
+                }
+            });
+            ilDiv.setAttribute('aria-expanded', !isExpanded);
+            ilceList.style.display = !isExpanded ? 'block' : 'none';
+          };
+
+          ilDiv.onclick = toggleIlceler;
+          ilDiv.onkeydown = (e) => { 
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleIlceler();
+            }
+          };
+          
+          ilceler.forEach(ilce => {
+            const ic = document.createElement('div');
+            ic.className = 'ilce';
+            ic.textContent = ilce;
+            ic.setAttribute('role', 'link'); 
+            ic.setAttribute('tabindex', '0');
+            ic.onclick = e => {
+                e.stopPropagation();
+                const url = `${location.pathname}?district=${encodeURIComponent(ilce)}`;
+                window.open(url, '_blank');
+            };
+            ic.onkeydown = e => { 
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    ic.click();
+                }
+            };
+            ilceList.appendChild(ic);
+          });
+          illerEl.appendChild(ilDiv);
+          illerEl.appendChild(ilceList);
+        });
+    }
+    
+    let theme = localStorage.getItem('theme') || 'dark';
+    const themeBtn = document.getElementById('btn-theme');
+    function applyTheme() {
+      document.body.setAttribute('data-theme', theme); 
+      document.documentElement.setAttribute('data-theme', theme); 
+      if (themeBtn) {
+        themeBtn.textContent = `Tema: ${theme === 'dark' ? 'Karanlık' : 'Açık'}`;
+        themeBtn.setAttribute('aria-pressed', theme === 'dark');
+      }
+      localStorage.setItem('theme', theme);
+    }
+    if (themeBtn) {
+        themeBtn.onclick = () => { theme = theme === 'dark' ? 'light' : 'dark'; applyTheme(); };
+    }
+    applyTheme();
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const d = new URLSearchParams(location.search).get('district');
+      const pageTitleEl = document.querySelector('h1.page-title');
+      const backButton = document.querySelector('.back-button');
+
+      if (d && coords[d]) { // District page
+        if(pageTitleEl) pageTitleEl.textContent = `${d} Hava Durumu`;
+        document.body.classList.add('district-loaded'); 
+        if (backButton) backButton.href = 'index2.html'; 
+        initWeatherFor(d);
+
+        // Automatically show alert modal if not shown this session
+        if (overlay && !sessionStorage.getItem('generalAlertShownThisSession')) {
+            overlay.classList.add('visible');
+            if (closeBtn) closeBtn.focus(); // Focus the close button for accessibility
+            sessionStorage.setItem('generalAlertShownThisSession', 'true');
+        }
+
+      } else { // Main page
+        if(pageTitleEl) pageTitleEl.textContent = `Güneydoğu Anadolu Hava Durumu`;
+      }
+    });
+    
+    function mapWeatherCodeToEmoji(code, precipitationAmount = null, isNight = false, temperature = null) {
+        const wc = Math.round(parseFloat(code));
+        let emoji;
+        const tempThreshold = 3; 
+
+        if (wc === 0) emoji = isNight ? '🌙' : '☀️';
+        else if (wc === 1) emoji = isNight ? '☁️' : '🌤️'; // Night: Few clouds
+        else if (wc === 2) emoji = isNight ? '☁️' : '⛅'; // Night: Scattered clouds
+        else if (wc === 3) emoji = '☁️'; // Night: Broken clouds / Overcast
+        else if (wc === 45 || wc === 48) emoji = '🌫️';
+        else if (wc >= 51 && wc <= 57) emoji = '🌦️'; // Drizzle
+        else if (wc >= 61 && wc <= 67) emoji = '🌧️'; // Rain
+        else if (wc >= 71 && wc <= 77) emoji = (temperature !== null && temperature > tempThreshold) ? '🌧️' : '❄️'; // Snow
+        else if (wc >= 80 && wc <= 82) emoji = '🌧️'; // Rain showers
+        else if (wc >= 85 && wc <= 86) emoji = (temperature !== null && temperature > tempThreshold) ? '🌧️' : '❄️'; // Snow showers
+        else if (wc >= 95 && wc <= 99) emoji = '⛈️'; // Thunderstorm
+        else emoji = isNight ? '☁️' : '🌥️'; // Default to cloudy / partly cloudy
+
+        // Refine based on precipitation amount if available
+        if (precipitationAmount !== null) {
+            const prAmount = parseFloat(precipitationAmount);
+            if (!isNaN(prAmount)) {
+                if (prAmount > 0) { // If there's any precipitation
+                    const nonPrecipClearCloudyIcons = isNight ? ['🌙'] : ['☀️', '🌤️', '⛅', '🌥️'];
+                    let isCurrentlyNonPrecipClearOrFewClouds = nonPrecipClearCloudyIcons.includes(emoji) || (isNight && emoji === '☁️' && wc <=2);
+                    if (isCurrentlyNonPrecipClearOrFewClouds && !(wc >= 45 && wc <= 48)) { // not fog
+                        emoji = '🌦️';
+                    }
+                    if (emoji === '🌦️' && prAmount > 2.0) { 
+                        emoji = '🌧️';
+                    }
+                } else { 
+                    const precipIconsToDowngrade = ['🌦️', '🌧️', '❄️', '⛈️'];
+                    if (precipIconsToDowngrade.includes(emoji)) {
+                        if (wc === 0) emoji = isNight ? '🌙' : '☀️';
+                        else if (wc === 1) emoji = isNight ? '☁️' : '🌤️';
+                        else if (wc === 2) emoji = isNight ? '☁️' : '⛅';
+                        else if (wc === 3) emoji = '☁️';
+                        else if (wc >= 45 && wc <= 48) emoji = '🌫️'; 
+                        else emoji = isNight ? '☁️' : '🌥️'; 
+                    }
+                }
+            }
+        }
+        return emoji;
+    }
+
+    const loader = document.getElementById('loader');
+    function showLoader(on) { if(loader) loader.style.display = on ? 'block' : 'none'; }
+    let curLat, curLon, curName;
+
+    function initWeatherFor(name) {
+      curName = name;
+      ({ lat: curLat, lon: curLon } = coords[name]);
+      const dailyForecastEl = document.getElementById('daily-forecast');
+      const hourlySectionEl = document.getElementById('hourly-section');
+      if(dailyForecastEl) dailyForecastEl.innerHTML = '';
+      if(hourlySectionEl) {
+          hourlySectionEl.style.display = 'none';
+           const hForecastDiv = document.getElementById('hourly-forecast');
+           if(hForecastDiv) hForecastDiv.innerHTML = ''; // Clear previous hourly forecast
+      }
+      loadData();
+    }
+
+    async function loadData() {
+      showLoader(true); // Show main loader for daily data
+      const key = `daily_${curName}`;
+      let cache = JSON.parse(localStorage.getItem(key) || 'null');
+      let resolvedData;
+
+      if (cache && Array.isArray(cache.data) && cache.data.length > 0 && (Date.now() - cache.ts <= 3600000)) {
+          resolvedData = cache.data;
+      } else {
+          const freshData = await getDaily();
+          if (Array.isArray(freshData) && freshData.length > 0) {
+              localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data: freshData }));
+              resolvedData = freshData;
+          } else if (cache && Array.isArray(cache.data) && cache.data.length > 0) {
+              console.warn(`Failed to fetch fresh data for ${curName}. Serving stale data from cache.`);
+              resolvedData = cache.data;
+          } else {
+              resolvedData = freshData; 
+          }
+      }
+      
+      renderDaily(resolvedData);
+      showLoader(false); // Hide main loader after daily data is rendered
+
+      // Automatically load and show hourly for the first valid day if on a district page
+      const isOnDistrictPage = document.body.classList.contains('district-loaded');
+      if (isOnDistrictPage && resolvedData && resolvedData.length > 0) {
+        const validDays = resolvedData.filter(d => d.tmp !== 'N/A');
+        if (validDays.length > 0) {
+          const firstDayDate = validDays[0].date;
+          // Don't await, showHourly will manage its own UI updates (spinner, content)
+          showHourly(firstDayDate); 
+        }
+      }
+    }
+
+    async function getDaily() {
+      const models = ['ecmwf','dwd-icon','gfs'];
+      const dailyParams = 'temperature_2m_max,precipitation_sum,weathercode';
+      const apiUrlSuffix = `&daily=${dailyParams}&timezone=auto&forecast_days=7`;
+      
+      const resps = await Promise.all(models.map(m => 
+        fetch(`https://api.open-meteo.com/v1/${m}?latitude=${curLat}&longitude=${curLon}${apiUrlSuffix}`)
+        .then(r => r.json())
+        .then(j => (!j || !j.daily) ? { time: [], temperature_2m_max: [], precipitation_sum: [], weathercode: [] } : j.daily)
+        .catch(error => {
+            console.error(`Error fetching data from ${m} for ${curName}:`, error);
+            return { time: [], temperature_2m_max: [], precipitation_sum: [], weathercode: [] };
+        })
+      ));
+
+      const primaryResponse = resps.find(r => r && r.time && r.time.length > 0);
+      if (!primaryResponse) return []; 
+      
+      return primaryResponse.time.slice(0, 7).map((date, i) => {
+        let tempSum = 0, precipSum = 0, codeSum = 0, validModels = 0;
+        resps.forEach(resp => {
+            if (resp && resp.time && resp.time.length > i && 
+                resp.temperature_2m_max?.[i] != null && resp.precipitation_sum?.[i] != null && resp.weathercode?.[i] != null) {
+                tempSum += resp.temperature_2m_max[i];
+                precipSum += resp.precipitation_sum[i];
+                codeSum += resp.weathercode[i];
+                validModels++;
+            }
+        });
+        return validModels === 0 ? { date, tmp: 'N/A', pr: 'N/A', cd: 0 } : {
+          date, tmp: (tempSum / validModels).toFixed(1),
+          pr: (precipSum / validModels).toFixed(2), cd: Math.round(codeSum / validModels)
+        };
+      });
+    }
+
+    function renderDaily(days) {
+      const df = document.getElementById('daily-forecast');
+      if (!df) return;
+      df.innerHTML = ''; 
+
+      if (!days || days.length === 0) {
+        df.innerHTML = `<p class="error-message">Hava durumu verisi alınamadı (${curName}).</p>`;
+        return;
+      }
+      const validDays = days.filter(d => d.tmp !== 'N/A');
+      if (validDays.length === 0) {
+         df.innerHTML = `<p class="error-message">Hava durumu verileri şu an için eksik (${curName}).</p>`;
+        return;
+      }
+
+      validDays.slice(0, 7).forEach(d => {
+        const c = document.createElement('div'); c.className = 'day-card';
+        const dailyTemp = parseFloat(d.tmp);
+        const emoji = mapWeatherCodeToEmoji(d.cd, d.pr, false, isNaN(dailyTemp) ? null : dailyTemp);
+        c.innerHTML = `<h3>${new Date(d.date).toLocaleDateString('tr-TR',{weekday:'short',day:'numeric',month:'short'})}</h3><div class="emoji" role="img" aria-label="Hava durumu: ${emoji}">${emoji}</div><div class="small-text"> ${d.tmp}°C</div><div class="small-text">💧 ${d.pr} mm</div>`;
+        c.onclick = () => showHourly(d.date);
+        c.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showHourly(d.date); }};
+        c.setAttribute('tabindex', '0');
+        df.appendChild(c);
+      });
+    }
+
+ async function showHourly(date) {
+  const hourlyTitleEl = document.getElementById('hourly-title');
+  const hdiv = document.getElementById('hourly-forecast');
+  const hourlySectionEl = document.getElementById('hourly-section');
+
+  if(!hourlyTitleEl || !hdiv || !hourlySectionEl) return;
+
+  hourlyTitleEl.textContent = `${new Date(date).toLocaleDateString('tr-TR', {day:'numeric', month:'long', year: 'numeric'})} Saatlik Tahmini`;
+  hdiv.innerHTML = '<div class="spinner" style="margin: 20px auto;"></div>'; 
+  hourlySectionEl.style.display = 'block'; // Make section visible before populating or scrolling
+
+  const models = ['ecmwf', 'dwd-icon', 'gfs'];
+  const apiUrlSuffixHourly = `&hourly=temperature_2m,precipitation,windspeed_10m,weathercode&timezone=auto&start_date=${date}&end_date=${date}`;
+  
+  const hrsResponses = await Promise.all(models.map(m =>
+    fetch(`https://api.open-meteo.com/v1/${m}?latitude=${curLat}&longitude=${curLon}${apiUrlSuffixHourly}`)
+    .then(r => r.json())
+    .then(j => (!j || !j.hourly) ? { time: [], temperature_2m: [], precipitation: [], windspeed_10m: [], weathercode: [] } : j.hourly)
+    .catch(error => {
+        console.error(`Error fetching hourly data from ${m} for ${curName} on ${date}:`, error);
+        return { time: [], temperature_2m: [], precipitation: [], windspeed_10m: [], weathercode: [] };
+    })
+  ));
+  
+  hdiv.innerHTML = ''; 
+
+  const primaryHrsResponse = hrsResponses.find(r => r && r.time && r.time.length > 0);
+  if (!primaryHrsResponse) {
+      hdiv.innerHTML = `<p class="error-message">Saatlik hava durumu verisi alınamadı (${curName} - ${date}).</p>`;
+      // hourlySectionEl is already visible
+      hourlySectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+  }
+
+  primaryHrsResponse.time.forEach((t, idx) => {
+      let tempSum = 0, precipSum = 0, windSum = 0, codeSum = 0, validModels = 0;
+      hrsResponses.forEach(hrResp => {
+          if (hrResp && hrResp.time && hrResp.time.length > idx &&
+              hrResp.temperature_2m?.[idx] != null && hrResp.precipitation?.[idx] != null &&
+              hrResp.windspeed_10m?.[idx] != null && hrResp.weathercode?.[idx] != null) {
+              tempSum += hrResp.temperature_2m[idx]; precipSum += hrResp.precipitation[idx];
+              windSum += hrResp.windspeed_10m[idx]; codeSum += hrResp.weathercode[idx];
+              validModels++;
+          }
+      });
+      if (validModels === 0) return; 
+
+      const avgTemp = (tempSum / validModels).toFixed(1);
+      const avgPrecip = (precipSum / validModels).toFixed(2);
+      const avgWind = (windSum / validModels).toFixed(1);
+      const avgCode = Math.round(codeSum / validModels);
+      
+      const currentHour = new Date(t).getHours();
+      const isNight = currentHour >= 20 || currentHour < 6; 
+      const hourlyTemp = parseFloat(avgTemp);
+      const finalEmoji = mapWeatherCodeToEmoji(avgCode, avgPrecip, isNight, isNaN(hourlyTemp) ? null : hourlyTemp);
+
+      const card = document.createElement('div');
+      card.className = 'hourly-card';
+      card.innerHTML = 
+        `<h4>${new Date(t).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}</h4>
+        <div class="emoji" role="img" aria-label="Saatlik hava durumu: ${finalEmoji}">${finalEmoji}</div>
+        <div class="data-section">
+            <div class="hourly-data-item"><span class="icon">🌡️</span><span class="value">${avgTemp}°C</span></div>
+            <div class="hourly-data-item"><span class="icon">💧</span><span class="value">${avgPrecip} mm</span></div>
+            <div class="hourly-data-item"><span class="icon">💨</span><span class="value">${avgWind} km/h</span></div>
+        </div>`;
+      hdiv.appendChild(card);
+    });
+
+  // hourlySectionEl is already visible
+  hdiv.scrollLeft = 0; 
+  // Only scroll if it's not the initial auto-load, or if desired.
+  // For now, always scroll to ensure visibility.
+  hourlySectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+</body>
+</html>

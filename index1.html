@@ -1,0 +1,310 @@
+ <!DOCTYPE html>
+<html lang="tr">
+<head>
+    <script>
+        if (!sessionStorage.getItem('onceYenilendi')) {
+            sessionStorage.setItem('onceYenilendi', '1');
+            location.reload();
+        }
+    </script>
+    <meta charset="UTF-8" />
+    <title>Güneydoğu Anadolu Hava Durumu Diyagramları</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-theme="dark">
+    <div class="page-container">
+        <header class="page-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo">🌤️</div>
+                    <h1 class="page-title">Güneydoğu Anadolu Hava Durumu</h1>
+                </div>
+                <button id="btn-theme" class="theme-toggle-button">
+                    <span class="theme-icon">🌙</span>
+                    <span class="theme-text">Karanlık Tema</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="hero-section">
+            <h2 class="hero-title">Meteorolojik Diyagram Sistemi</h2>
+            <p class="hero-subtitle">Güneydoğu Anadolu Bölgesi İlleri İçin Detaylı Hava Durumu Analizi</p>
+        </div>
+
+        <main>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="İl veya ilçe ara..." class="search-input">
+                <div class="search-icon">🔍</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">11</div>
+                    <div class="stat-label">İl</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">98</div>
+                    <div class="stat-label">İlçe</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Meteoroloji Modeli</div>
+                </div>
+            </div>
+
+            <div class="il-container" role="navigation" aria-label="İl ve ilçe seçimi">
+                <!-- Adıyaman -->
+                <div class="il-card" role="button" aria-expanded="false" tabindex="0" data-il-id="adiyaman">
+                    <div class="il-header">
+                        <div class="il-info">
+                            <span class="il-name">Adıyaman</span>
+                            <span class="il-count">9 İlçe</span>
+                        </div>
+                        <span class="il-toggle-icon">❯</span>
+                    </div>
+                    <div class="ilceler" id="adiyaman">
+                        <div class="ilce" data-lat="37.7648" data-lon="38.2786" data-name="Besni">Besni</div>
+                        <div class="ilce" data-lat="37.7167" data-lon="38.4833" data-name="Çelikhan">Çelikhan</div>
+                        <div class="ilce" data-lat="37.8000" data-lon="38.9833" data-name="Gerger">Gerger</div>
+                        <div class="ilce" data-lat="37.6333" data-lon="37.6500" data-name="Gölbaşı">Gölbaşı</div>
+                        <div class="ilce" data-lat="37.7833" data-lon="38.6167" data-name="Kahta">Kahta</div>
+                        <div class="ilce" data-lat="37.7648" data-lon="38.2786" data-name="Merkez">Merkez</div>
+                        <div class="ilce" data-lat="37.5833" data-lon="38.4833" data-name="Samsat">Samsat</div>
+                        <div class="ilce" data-lat="37.9333" data-lon="38.3833" data-name="Sincik">Sincik</div>
+                        <div class="ilce" data-lat="37.9167" data-lon="38.8333" data-name="Tut">Tut</div>
+                    </div>
+                </div>
+
+                <!-- Batman -->
+                <div class="il-card" role="button" aria-expanded="false" tabindex="0" data-il-id="batman">
+                    <div class="il-header">
+                        <div class="il-info">
+                            <span class="il-name">Batman</span>
+                            <span class="il-count">6 İlçe</span>
+                        </div>
+                        <span class="il-toggle-icon">❯</span>
+                    </div>
+                    <div class="ilceler" id="batman">
+                        <div class="ilce" data-lat="37.8833" data-lon="41.7333" data-name="Beşiri">Beşiri</div>
+                        <div class="ilce" data-lat="37.7167" data-lon="41.4167" data-name="Gercüş">Gercüş</div>
+                        <div class="ilce" data-lat="37.7167" data-lon="41.4000" data-name="Hasankeyf">Hasankeyf</div>
+                        <div class="ilce" data-lat="38.1833" data-lon="41.4833" data-name="Kozluk">Kozluk</div>
+                        <div class="ilce" data-lat="37.8811" data-lon="41.1356" data-name="Merkez">Merkez</div>
+                        <div class="ilce" data-lat="38.2833" data-lon="41.2500" data-name="Sason">Sason</div>
+                    </div>
+                </div>
+
+                <!-- Diyarbakır -->
+                <div class="il-card" role="button" aria-expanded="false" tabindex="0" data-il-id="diyarbakir">
+                    <div class="il-header">
+                        <div class="il-info">
+                            <span class="il-name">Diyarbakır</span>
+                            <span class="il-count">14 İlçe</span>
+                        </div>
+                        <span class="il-toggle-icon">❯</span>
+                    </div>
+                    <div class="ilceler" id="diyarbakir">
+                        <div class="ilce" data-lat="37.9144" data-lon="40.2306" data-name="Bağlar">Bağlar</div>
+                        <div class="ilce" data-lat="37.8500" data-lon="40.6500" data-name="Bismil">Bismil</div>
+                        <div class="ilce" data-lat="37.8167" data-lon="39.4500" data-name="Çermik">Çermik</div>
+                        <div class="ilce" data-lat="37.7167" data-lon="40.4167" data-name="Çınar">Çınar</div>
+                        <div class="ilce" data-lat="37.6333" data-lon="39.2833" data-name="Çüngüş">Çüngüş</div>
+                        <div class="ilce" data-lat="38.2667" data-lon="39.7667" data-name="Ergani">Ergani</div>
+                        <div class="ilce" data-lat="38.1833" data-lon="40.4333" data-name="Hani">Hani</div>
+                        <div class="ilce" data-lat="38.2667" data-lon="40.9500" data-name="Hazro">Hazro</div>
+                        <div class="ilce" data-lat="37.9600" data-lon="40.1900" data-name="Kayapınar">Kayapınar</div>
+                        <div class="ilce" data-lat="38.0833" data-lon="41.0667" data-name="Kocaköy">Kocaköy</div>
+                        <div class="ilce" data-lat="38.4167" data-lon="41.0000" data-name="Kulp">Kulp</div>
+                        <div class="ilce" data-lat="38.4667" data-lon="40.7667" data-name="Lice">Lice</div>
+                        <div class="ilce" data-lat="37.9144" data-lon="40.2306" data-name="Sur">Sur</div>
+                        <div class="ilce" data-lat="37.9144" data-lon="40.2306" data-name="Yenişehir">Yenişehir</div>
+                    </div>
+                </div>
+
+                <!-- Gaziantep -->
+                <div class="il-card" role="button" aria-expanded="false" tabindex="0" data-il-id="gaziantep">
+                    <div class="il-header">
+                        <div class="il-info">
+                            <span class="il-name">Gaziantep</span>
+                            <span class="il-count">9 İlçe</span>
+                        </div>
+                        <span class="il-toggle-icon">❯</span>
+                    </div>
+                    <div class="ilceler" id="gaziantep">
+                        <div class="ilce" data-lat="37.0500" data-lon="37.8500" data-name="Araban">Araban</div>
+                        <div class="ilce" data-lat="37.0333" data-lon="36.6333" data-name="İslahiye">İslahiye</div>
+                        <div class="ilce" data-lat="36.8833" data-lon="37.9167" data-name="Karkamış">Karkamış</div>
+                        <div class="ilce" data-lat="37.0167" data-lon="37.7833" data-name="Nizip">Nizip</div>
+                        <div class="ilce" data-lat="37.0833" data-lon="37.4667" data-name="Oğuzeli">Oğuzeli</div>
+                        <div class="ilce" data-lat="37.0662" data-lon="37.3833" data-name="Şahinbey">Şahinbey</div>
+                        <div class="ilce" data-lat="37.0662" data-lon="37.3833" data-name="Şehitkamil">Şehitkamil</div>
+                        <div class="ilce" data-lat="37.3000" data-lon="37.5833" data-name="Yavuzeli">Yavuzeli</div>
+                        <div class="ilce" data-lat="37.1667" data-lon="36.7833" data-name="Nurdağı">Nurdağı</div>
+                    </div>
+                </div>
+
+                <!-- Kilis -->
+                <div class="il-card" role="button" aria-expanded="false" tabindex="0" data-il-id="kilis">
+                    <div class="il-header">
+                        <div class="il-info">
+                            <span class="il-name">Kilis</span>
+                            <span class="il-count">4 İlçe</span>
+                        </div>
+                        <span class="il-toggle-icon">❯</span>
+                    </div>
+                    <div class="ilceler" id="kilis">
+                        <div class="ilce" data-lat="36.6833" data-lon="37.2167" data-name="Elbeyli">Elbeyli</div>
+                        <div class="ilce" data-lat="36.7184" data-lon="37.1212" data-name="Merkez">Merkez</div>
+                        <div class="ilce" data-lat="36.5167" data-lon="36.9333" data-name="Musabeyli">Musabeyli</div>
+                        <div class="ilce" data-lat="36.8500" data-lon="37.1500" data-name="Polateli">Polateli</div>
+                    </div>
+                </div>
+
+                <!-- Mardin -->
+                <div class="il-card" role="button" aria-expanded="false" tabindex="0" data-il-id="mardin">
+                    <div class="il-header">
+                        <div class="il-info">
+                            <span class="il-name">Mardin</span>
+                            <span class="il-count">10 İlçe</span>
+                        </div>
+                        <span class="il-toggle-icon">❯</span>
+                    </div>
+                    <div class="ilceler" id="mardin">
+                        <div class="ilce" data-lat="37.3106" data-lon="40.7333" data-name="Artuklu">Artuklu</div>
+                        <div class="ilce" data-lat="37.5167" data-lon="41.7167" data-name="Dargeçit">Dargeçit</div>
+                        <div class="ilce" data-lat="37.3667" data-lon="42.0667" data-name="Derik">Derik</div>
+                        <div class="ilce" data-lat="37.1938" data-lon="40.5850" data-name="Kızıltepe">Kızıltepe</div>
+                        <div class="ilce" data-lat="37.4667" data-lon="40.4833" data-name="Mazıdağı">Mazıdağı</div>
+                        <div class="ilce" data-lat="37.4167" data-lon="41.3667" data-name="Midyat">Midyat</div>
+                        <div class="ilce" data-lat="37.0667" data-lon="41.2167" data-name="Nusaybin">Nusaybin</div>
+                        <div class="ilce" data-lat="37.3167" data-lon="41.0833" data-name="Ömerli">Ömerli</div>
+                        <div class="ilce" data-lat="37.5333" data-lon="40.8833" data-name="Savur">Savur</div>
+                        <div class="ilce" data-lat="37.3500" data-lon="40.8167" data-name="Yeşilli">Yeşilli</div>
+                    </div>
+                </div>
+
+                <!-- Siirt -->
+                <div class="il-card" role="button" aria-expanded="false" tabindex="0" data-il-id="siirt">
+                    <div class="il-header">
+                        <div class="il-info">
+                            <span class="il-name">Siirt</span>
+                            <span class="il-count">7 İlçe</span>
+                        </div>
+                        <span class="il-toggle-icon">❯</span>
+                    </div>
+                    <div class="ilceler" id="siirt">
+                        <div class="ilce" data-lat="38.0500" data-lon="41.8667" data-name="Baykan">Baykan</div>
+                        <div class="ilce" data-lat="37.5333" data-lon="41.5833" data-name="Eruh">Eruh</div>
+                        <div class="ilce" data-lat="37.9333" data-lon="41.6833" data-name="Kurtalan">Kurtalan</div>
+                        <div class="ilce" data-lat="37.9274" data-lon="41.9444" data-name="Merkez">Merkez</div>
+                        <div class="ilce" data-lat="38.0833" data-lon="42.3500" data-name="Pervari">Pervari</div>
+                        <div class="ilce" data-lat="38.0667" data-lon="41.9333" data-name="Şirvan">Şirvan</div>
+                        <div class="ilce" data-lat="37.9500" data-lon="41.8833" data-name="Tillo">Tillo</div>
+                    </div>
+                </div>
+
+                <!-- Şanlıurfa -->
+                <div class="il-card" role="button" aria-expanded="false" tabindex="0" data-il-id="urfa">
+                    <div class="il-header">
+                        <div class="il-info">
+                            <span class="il-name">Şanlıurfa</span>
+                            <span class="il-count">12 İlçe</span>
+                        </div>
+                        <span class="il-toggle-icon">❯</span>
+                    </div>
+                    <div class="ilceler" id="urfa">
+                        <div class="ilce" data-lat="36.7167" data-lon="38.9500" data-name="Akçakale">Akçakale</div>
+                        <div class="ilce" data-lat="37.0167" data-lon="37.9833" data-name="Birecik">Birecik</div>
+                        <div class="ilce" data-lat="37.2167" data-lon="38.5333" data-name="Bozova">Bozova</div>
+                        <div class="ilce" data-lat="36.8500" data-lon="40.0500" data-name="Ceylanpınar">Ceylanpınar</div>
+                        <div class="ilce" data-lat="37.2667" data-lon="37.8167" data-name="Halfeti">Halfeti</div>
+                        <div class="ilce" data-lat="37.1583" data-lon="38.7969" data-name="Haliliye">Haliliye</div>
+                        <div class="ilce" data-lat="36.8667" data-lon="39.0333" data-name="Harran">Harran</div>
+                        <div class="ilce" data-lat="37.1583" data-lon="38.7969" data-name="Eyyübiye">Eyyübiye</div>
+                        <div class="ilce" data-lat="37.1583" data-lon="38.7969" data-name="Karaköprü">Karaköprü</div>
+                        <div class="ilce" data-lat="37.7500" data-lon="39.3167" data-name="Siverek">Siverek</div>
+                        <div class="ilce" data-lat="36.9500" data-lon="38.4167" data-name="Suruç">Suruç</div>
+                        <div class="ilce" data-lat="37.2333" data-lon="39.7667" data-name="Viranşehir">Viranşehir</div>
+                    </div>
+                </div>
+
+                <!-- Şırnak -->
+                <div class="il-card" role="button" aria-expanded="false" tabindex="0" data-il-id="sirnak">
+                    <div class="il-header">
+                        <div class="il-info">
+                            <span class="il-name">Şırnak</span>
+                            <span class="il-count">7 İlçe</span>
+                        </div>
+                        <span class="il-toggle-icon">❯</span>
+                    </div>
+                    <div class="ilceler" id="sirnak">
+                        <div class="ilce" data-lat="37.5833" data-lon="42.8167" data-name="Beytüşşebap">Beytüşşebap</div>
+                        <div class="ilce" data-lat="37.3250" data-lon="42.1969" data-name="Cizre">Cizre</div>
+                        <div class="ilce" data-lat="37.4667" data-lon="41.9167" data-name="Güçlükonak">Güçlükonak</div>
+                        <div class="ilce" data-lat="37.3333" data-lon="41.8833" data-name="İdil">İdil</div>
+                        <div class="ilce" data-lat="37.5208" data-lon="42.4619" data-name="Merkez">Merkez</div>
+                        <div class="ilce" data-lat="37.2500" data-lon="42.4667" data-name="Silopi">Silopi</div>
+                        <div class="ilce" data-lat="37.4500" data-lon="42.8500" data-name="Uludere">Uludere</div>
+                    </div>
+                </div>
+
+                <!-- istanbul -->
+                <div class="il-card" role="button" aria-expanded="false" tabindex="0" data-il-id="istanbul">
+                    <div class="il-header">
+                        <div class="il-info">
+                            <span class="il-name">istanbul</span>
+                            <span class="il-count">1 İlçe</span>
+                        </div>
+                        <span class="il-toggle-icon">❯</span>
+                    </div>
+                    <div class="ilceler" id="istanbul">
+                        <div class="ilce" data-lat="41.0082" data-lon="28.9784" data-name="istanbul">istanbul</div>
+                    </div>
+                </div>
+
+                <!-- rize -->
+                <div class="il-card" role="button" aria-expanded="false" tabindex="0" data-il-id="rize">
+                    <div class="il-header">
+                        <div class="il-info">
+                            <span class="il-name">rize</span>
+                            <span class="il-count">1 İlçe</span>
+                        </div>
+                        <span class="il-toggle-icon">❯</span>
+                    </div>
+                    <div class="ilceler" id="rize">
+                        <div class="ilce" data-lat="41.0201" data-lon="40.5234" data-name="rize">rize</div>
+                    </div>
+                </div>
+
+                <!-- Hakkari -->
+                <div class="il-card" role="button" aria-expanded="false" tabindex="0" data-il-id="hakkari">
+                    <div class="il-header">
+                        <div class="il-info">
+                            <span class="il-name">Hakkari</span>
+                            <span class="il-count">4 İlçe</span>
+                        </div>
+                        <span class="il-toggle-icon">❯</span>
+                    </div>
+                    <div class="ilceler" id="hakkari">
+                        <div class="ilce" data-lat="37.5833" data-lon="44.2167" data-name="Merkez">Merkez</div>
+                        <div class="ilce" data-lat="37.3833" data-lon="43.7333" data-name="Şemdinli">Şemdinli</div>
+                        <div class="ilce" data-lat="37.9167" data-lon="44.0833" data-name="Yüksekova">Yüksekova</div>
+                        <div class="ilce" data-lat="37.4500" data-lon="43.3500" data-name="Çukurca">Çukurca</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2025 AtmosferGDA – Tüm hakları saklıdır.</p>
+            <p class="footer-small">Veriler <a href="https://open-meteo.com/" target="_blank">Open-Meteo.com</a> üzerinden alınan verilere dayanmaktadır.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html

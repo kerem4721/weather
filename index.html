@@ -1,0 +1,196 @@
+ <!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hoş Geldiniz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1a1b1e;
+      --card-bg: #25262a;
+      --accent: #4dabf7;
+      --accent-hover: #74c0fc;
+      --text-primary: #e9ecef;
+      --text-secondary: #adb5bd;
+      --border-color: #373a40;
+      --shadow-color: rgba(0, 0, 0, 0.2);
+      --success-bg: #2f9e44;
+      --warning-bg: #fcc419;
+      --danger-bg: #e03131;
+      --font-sans: 'Inter', sans-serif;
+    }
+
+    [data-theme="light"] {
+      --bg: #f8f9fa;
+      --card-bg: #ffffff;
+      --accent: #228be6;
+      --accent-hover: #1c7ed6;
+      --text-primary: #212529;
+      --text-secondary: #495057;
+      --border-color: #dee2e6;
+      --shadow-color: rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      transition: background-color 0.3s, color 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .page-container {
+      width: 100%;
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-top: 30px;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+    }
+
+    .card-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      width: 100%;
+      justify-items: center;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 350px;
+      padding: 25px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.2s;
+      box-shadow: 0 4px 12px var(--shadow-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .card:hover {
+      transform: translateY(-6px) scale(1.03);
+      box-shadow: 0 8px 20px color-mix(in srgb, var(--shadow-color) 70%, transparent);
+      background-color: color-mix(in srgb, var(--card-bg) 90%, var(--accent) 5%);
+    }
+
+    .card img {
+      width: 100%;
+      max-height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-color);
+      background-color: var(--border-color);
+    }
+
+    .card h2 {
+      color: var(--accent);
+      font-size: 1.6rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      flex-grow: 1;
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2rem;
+      }
+
+      .card-container {
+        gap: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .card h2 {
+        font-size: 1.4rem;
+      }
+
+      .card p {
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .card-container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <div class="page-container">
+    <header>
+      <h1>Hoş Geldiniz</h1>
+    </header>
+
+    <div class="card-container">
+      <!-- Diyagram Kartı -->
+      <div class="card" onclick="location.href='index1.html'">
+        <img src="di.png" alt="Diyagram Görseli">
+        <h2>Diyagram</h2>
+        <p>Diyagram detaylarını görmek için tıklayın.</p>
+      </div>
+
+      <!-- Hava Durumu Kartı -->
+      <div class="card" onclick="location.href='index2.html'">
+        <img src="hi.png" alt="Hava Durumu Görseli">
+        <h2>Hava Durumu</h2>
+        <p>İlçenizdeki havadurumunu görmek için tıklayın!</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    if (!sessionStorage.getItem('onceYenilendi_index')) {
+      sessionStorage.setItem('onceYenilendi_index', '1');
+    }
+
+    function applyLandingPageTheme() {
+      let theme = localStorage.getItem('theme') || 'dark';
+      document.body.setAttribute('data-theme', theme);
+    }
+
+    applyLandingPageTheme();
+  </script>
+
+</body>
+</html>
